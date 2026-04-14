@@ -1,0 +1,17 @@
+#settings-container {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    top: 5px;
+    right: 5px;
+
+    border: 1px solid black;
+    border-radius: 12px;
+    background-color: white;
+    transition: width 0.25s, height 0.25s;
+}
+
+#settings-container.open {
+    width: 200px;
+    height: 200px;
+}

@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import "./Board.css"
 import * as THREE from "three"
-import { CARD_GEOMETRY, CARD_MATERIALS, random_material } from "../utils/cards";
+import { CARD_GEOMETRY, CARD_MATERIALS, CardType, random_card } from "../utils/cards";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 interface Card extends THREE.Object3D<THREE.Object3DEventMap> {
@@ -12,7 +12,7 @@ interface Card extends THREE.Object3D<THREE.Object3DEventMap> {
 }
 
 export type BoardRef = {
-    add_card: () => void
+    add_card: () => CardType | null
 }
 
 function animate_card(card: Card, p: number){
@@ -67,7 +67,8 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
     useImperativeHandle(ref, () => ({
         add_card: () => {
             if(scene_ref.current && clock_ref.current){
-                const card = create_card(random_material());
+                let [mat, type] = random_card();
+                const card = create_card(mat);
                 card.created_at = clock_ref.current?.elapsedTime;
                 card.target = new THREE.Vector3(
                     (Math.random()-0.5), 
@@ -75,9 +76,11 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
                     (Math.random()-0.5)
                 );
                 scene_ref.current.add(card);
-
                 cards_ref.current.push(card);
+
+                return type;
             }
+            return null;
         }
     }));
 
@@ -120,8 +123,9 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
         floor_mesh.rotation.x = -Math.PI / 2
 
         camera.position.y = 9;
+        camera.rotation.x = -Math.PI/2;
 
-        const controls = new OrbitControls( camera, renderer.domElement );
+        // const controls = new OrbitControls( camera, renderer.domElement );
 
         function handle_resize(){
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -138,7 +142,7 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
                 animate_card(card, (clock.elapsedTime - card.created_at)*1.5);
             };
 
-            controls.update();
+            // controls.update();
             renderer.render( scene, camera );
         }
         renderer.setAnimationLoop( animate );

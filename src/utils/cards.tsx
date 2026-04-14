@@ -29,10 +29,6 @@ export enum CardType {
     GORILLA = "gorilla"
 }
 
-export function random_material(){
-    return ALL_MATERIALS[Math.floor(Math.random() * ALL_MATERIALS.length)];
-}
-
 export const CARD_GEOMETRY = new THREE.PlaneGeometry(5, 7);
 
 export const CARD_MATERIALS = {
@@ -104,12 +100,22 @@ export const CARD_MATERIALS = {
         generate_material(textureLoader.load('/cards/pizza_10.png', fix_colorspace)),
         generate_material(textureLoader.load('/cards/pizza_10.png', fix_colorspace)),
     ],
+    narwhal: [],
+    groundhog: [],
+    gorilla: [],
 }
 
-const ALL_MATERIALS = [
-    ...CARD_MATERIALS.taco,
-    ...CARD_MATERIALS.cat,
-    ...CARD_MATERIALS.goat,
-    ...CARD_MATERIALS.cheese,
-    ...CARD_MATERIALS.pizza,
+const ALL_MATERIALS: [THREE.MeshStandardMaterial, CardType][] = [
+    ...CARD_MATERIALS.taco.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.TACO]),
+    ...CARD_MATERIALS.cat.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.CAT]),
+    ...CARD_MATERIALS.goat.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.GOAT]),
+    ...CARD_MATERIALS.cheese.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.CHEESE]),
+    ...CARD_MATERIALS.pizza.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.PIZZA]),
+    ...CARD_MATERIALS.narwhal.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.NARWHAL]),
+    ...CARD_MATERIALS.groundhog.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.GROUNDHOG]),
+    ...CARD_MATERIALS.gorilla.map<[THREE.MeshStandardMaterial, CardType]>(mat => [mat, CardType.GORILLA]),
 ]
+
+export function random_card(){
+    return ALL_MATERIALS[Math.floor(Math.random() * ALL_MATERIALS.length)];
+}
