@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import "./Board.css"
 import * as THREE from "three"
-import { CARD_GEOMETRY, CARD_MATERIALS, CardType, random_card } from "../utils/cards";
+import { CARD_GEOMETRY, CARD_MATERIALS, CardType, random_card, STAR_GEOMETRY, STAR_MATERIAL } from "../utils/cards";
 // import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 interface Card extends THREE.Object3D<THREE.Object3DEventMap> {
@@ -11,8 +11,15 @@ interface Card extends THREE.Object3D<THREE.Object3DEventMap> {
     created_at: number
 }
 
+interface Star extends THREE.Object3D<THREE.Object3DEventMap> {
+    direction: number
+    size: number
+    speed: number
+}
+
 export type BoardRef = {
     add_card: () => CardType | null
+    reaction: (good: boolean) => void
 }
 
 function animate_card(card: Card, p: number){
@@ -63,6 +70,7 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
     const scene_ref = useRef<THREE.Scene>(null);
     const clock_ref = useRef<THREE.Clock>(null);
     const cards_ref = useRef<Card[]>([]);
+    const stars_ref = useRef<Star[]>([]);
 
     useImperativeHandle(ref, () => ({
         add_card: () => {
@@ -81,6 +89,22 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
                 return type;
             }
             return null;
+        },
+        reaction: (good: boolean) => {
+            console.log(stars_ref.current);
+            for(var i = 0; i < 6; i++){
+                const star = new THREE.Mesh(STAR_GEOMETRY, STAR_MATERIAL) as unknown as Star;
+                star.direction = Math.random() * Math.PI * 2;
+                star.size = 0.15 + Math.random() * 0.01;
+                star.speed = 0.5 + Math.random()*0.5;
+                
+                star.position.y = 7;
+                star.rotation.x = -Math.PI/2;
+                star.position.add(new THREE.Vector3(Math.cos(star.direction)*0.3, 0, Math.sin(star.direction)*0.3));
+                star.scale.set(star.size, star.size, star.size);
+                scene_ref.current?.add(star);
+                stars_ref.current.push(star);
+            }
         }
     }));
 
@@ -135,12 +159,21 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
         window.addEventListener("resize", handle_resize);
 
         function animate(){
-            clock.getDelta();
+            let delta = clock.getDelta();
             
             for(var i = 0; i < cards_ref.current.length; i++){
                 const card = cards_ref.current[i];
                 animate_card(card, (clock.elapsedTime - card.created_at)*1.5);
             };
+
+            stars_ref.current.forEach(star => {
+                star.size = star.size - 0.3 * delta;
+
+                star.position.add(new THREE.Vector3(Math.cos(star.direction)*star.speed*delta, 0, Math.sin(star.direction)*star.speed*delta));
+                star.scale.set(star.size, star.size, star.size);
+
+                if(star.size <= 0.001) stars_ref.current = stars_ref.current.filter(s => s != star);
+            });
 
             // controls.update();
             renderer.render( scene, camera );

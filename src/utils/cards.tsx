@@ -30,6 +30,13 @@ export enum CardType {
     GORILLA = "gorilla"
 }
 
+const star_texture = textureLoader.load('/icons/star.png', fix_colorspace);
+export const STAR_MATERIAL = new THREE.MeshStandardMaterial({
+    map: star_texture,
+    alphaTest: 0.01
+});
+export const STAR_GEOMETRY = new THREE.PlaneGeometry(1, 1);
+
 export const CARD_GEOMETRY = new THREE.PlaneGeometry(5, 7);
 
 export const CARD_MATERIALS = {

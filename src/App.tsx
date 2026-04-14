@@ -25,6 +25,7 @@ function App() {
     let is_waiting = useRef(false);
     let timeout = useRef<number | null>(null);
     let timings = useRef<number[]>([]);
+    let misses = useRef(0);
 
     let [reaction_time, set_reaction_time] = useState(0);
 
@@ -36,11 +37,17 @@ function App() {
     const handleKeyDown = (event: KeyboardEvent) => {
         let t = performance.now();
 
-        if(event.key === ' ' && is_waiting.current){
-            timings.current.push(t - waiting_since.current);
-
-            is_waiting.current = false;
-            timeout.current = random_timeout();
+        if(event.key === ' '){
+            if(is_waiting.current){
+                timings.current.push(t - waiting_since.current);
+                board.current?.reaction(true);
+            
+                is_waiting.current = false;
+                timeout.current = random_timeout();
+            }else if(target_card != null){
+                misses.current += 1;
+                board.current?.reaction(false);
+            }
         }
     }
 
@@ -54,6 +61,7 @@ function App() {
         set_target_card(null)
         set_current_card(null);
         timings.current = [];
+        misses.current = 0;
 
         timeout.current = random_timeout();
     }
