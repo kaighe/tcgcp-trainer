@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { Board, BoardRef } from './components/Board';
-import { CardType } from './utils/cards';
+import { CardType, TEXTURE_MANAGER } from './utils/cards';
 import { useSettings } from './hooks/useSettings';
 
 // I hate react and gave up on using components
@@ -92,10 +92,15 @@ function App() {
     useEffect(() => {
         document.addEventListener("keydown", handleKeyDown);
 
-        setTimeout(() => {
-            set_loading_progress(100);
-            set_loading_done(true);
-        }, 1000)
+        TEXTURE_MANAGER.onProgress = (_, loaded, total) => {
+            set_loading_progress(loaded / total * 100);
+        };
+
+        TEXTURE_MANAGER.onLoad = () => {
+            setTimeout(() => {
+                set_loading_done(true);
+            }, 1000)
+        };
 
         return () => {
             document.removeEventListener("keydown", handleKeyDown);

@@ -1,6 +1,7 @@
 import * as THREE from "three"
 
-const textureLoader = new THREE.TextureLoader();
+export const TEXTURE_MANAGER = new THREE.LoadingManager();
+const textureLoader = new THREE.TextureLoader(TEXTURE_MANAGER);
 
 function fix_colorspace(data: THREE.Texture<HTMLImageElement>){
     data.colorSpace = THREE.SRGBColorSpace;
