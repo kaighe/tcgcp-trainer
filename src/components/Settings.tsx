@@ -19,13 +19,13 @@ export const Settings = () => {
         if(!container_ref.current) return;
 
         container_ref.current.addEventListener("click", on_click);
-        document.addEventListener("click", on_outside_click);
+        document.addEventListener("click", on_outside_click as EventListener);
 
         return () => {
             if(!container_ref.current) return;
 
             container_ref.current.removeEventListener("click", on_click);
-            document.removeEventListener("click", on_outside_click);
+            document.removeEventListener("click", on_outside_click as EventListener);
         }
     }, [])
 

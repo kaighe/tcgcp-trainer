@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { Board, BoardRef } from './components/Board';
-import { Settings } from './components/Settings';
 import { CardType } from './utils/cards';
 import { useSettings } from './hooks/useSettings';
 
@@ -17,7 +16,7 @@ const CARDS = [
 ]
 
 function App() {
-    let [settings, set_settings] = useSettings();
+    let [settings, _] = useSettings();
     let board = useRef<BoardRef>(null);
     let [target_card, set_target_card] = useState<CardType | null>(null);
     let [current_card, set_current_card] = useState<CardType | null>(null);
@@ -31,6 +30,8 @@ function App() {
 
     let [start_visible, set_start_visible] = useState(true);
     let [stats_visible, set_stats_visible] = useState(false);
+    let [loading_done, set_loading_done] = useState(false);
+    let [loading_progress, set_loading_progress] = useState(0);
 
     const handleKeyDown = (event: KeyboardEvent) => {
         let t = performance.now();
@@ -91,6 +92,11 @@ function App() {
     useEffect(() => {
         document.addEventListener("keydown", handleKeyDown);
 
+        setTimeout(() => {
+            set_loading_progress(100);
+            set_loading_done(true);
+        }, 1000)
+
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
             if(timeout.current != null) clearTimeout(timeout.current);
@@ -132,6 +138,12 @@ function App() {
                     set_stats_visible(false);
                     start();
                 }}>TRY AGAIN</div>
+            </div>
+
+            <div id="loading-window" className={loading_done ? "done" : ""}>
+                <div id="loading-bar">
+                    <div id="loading-progress" style={{width: loading_progress + "%"}}></div>
+                </div>
             </div>
         </>
     )

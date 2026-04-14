@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import "./Board.css"
 import * as THREE from "three"
 import { CARD_GEOMETRY, CARD_MATERIALS, CardType, random_card } from "../utils/cards";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
+// import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 interface Card extends THREE.Object3D<THREE.Object3DEventMap> {
     theta: number
