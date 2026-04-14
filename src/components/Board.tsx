@@ -93,7 +93,8 @@ export const Board = forwardRef<BoardRef>((_, ref) => {
         reaction: (good: boolean) => {
             console.log(stars_ref.current);
             for(var i = 0; i < 6; i++){
-                const star = new THREE.Mesh(STAR_GEOMETRY, STAR_MATERIAL) as unknown as Star;
+                let material = good ? STAR_MATERIAL : STAR_MATERIAL;
+                const star = new THREE.Mesh(STAR_GEOMETRY, material) as unknown as Star;
                 star.direction = Math.random() * Math.PI * 2;
                 star.size = 0.15 + Math.random() * 0.01;
                 star.speed = 0.5 + Math.random()*0.5;
